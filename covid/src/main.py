@@ -1,4 +1,6 @@
 from graph import *
+from IO import IO
+
 
 
 # def main():
@@ -21,9 +23,11 @@ from graph import *
 def main():
     while True:
         try:
-            path = input("Please enter a input path:\n")
-            with open(path, 'r') as inputfile:
-                print(inputfile.name)
+            # path = input("Please enter a input path:\n")
+            path = "covid/src/input"
+            with open(path, 'r') as input_file:
+                IO(input_file)
+                break
         except (FileNotFoundError, IOError):
             print("Error: file not found")
         else:
