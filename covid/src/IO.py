@@ -1,4 +1,5 @@
 from statistics import Statistics
+from bronkerbosh import find_maximal_cliques
 
 def IO(input_file):
     number_of_tests = int(input_file.readline())
@@ -11,11 +12,11 @@ def IO(input_file):
         bounds = input_file.readline().split(' ')
         stats.lower_bound = int(bounds[0])
         stats.upper_bound = int(bounds[1])
-        print(stats)
-        break
-
-
-        # stats.lower_bound = int(input_file.read(1))
-        # input.read(1)
-        # stats.upper_bound = int(input_file.readline())
+        while number_of_edges > 0:
+            edge = input_file.readline().split(' ')
+            stats.graph.edges.append((int(edge[0]), int(edge[1])))
+            number_of_edges -= 1
+        number_of_tests -= 1
+        print('finding cliques...')
+        find_maximal_cliques(stats.graph)
         
