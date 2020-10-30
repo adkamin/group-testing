@@ -9,4 +9,4 @@ class Statistics:
         self.upper_bound = 0
 
     def __str__(self):
-        return f'({self.graph}, {self.initially_infected}, {self.infection_chance}, {self.lower_bound}, {self.upper_bound})'
+        return f'({self.graph} \n {self.initially_infected}, {self.infection_chance}, {self.lower_bound}, {self.upper_bound})'
