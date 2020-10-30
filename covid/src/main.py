@@ -24,7 +24,7 @@ def main():
     while True:
         try:
             # path = input("Please enter a input path:\n")
-            path = "covid/src/input"
+            path = "src/input"
             with open(path, 'r') as input_file:
                 IO(input_file)
                 break
