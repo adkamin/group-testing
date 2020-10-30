@@ -19,4 +19,5 @@ def IO(input_file):
         number_of_tests -= 1
         print('finding cliques...')
         find_maximal_cliques(stats.graph)
+        break
         
