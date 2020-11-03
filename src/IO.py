@@ -1,10 +1,9 @@
 from statistics import Statistics
-from bronkerbosh import find_maximal_cliques
 
 
 def IO(input_file):
-    # read_graph_input(input_file)
-    read_graph_server()
+    read_graph_input(input_file)
+    # read_graph_server()
 
 
 # For testing purposes
@@ -25,6 +24,7 @@ def read_graph_input(input_file):
             number_of_edges -= 1
         stats.graph.create_nodes(nodes)
         number_of_tests -= 1
+        stats.graph.find_maximal_cliques()
         break
 
 # To communicate with the server
