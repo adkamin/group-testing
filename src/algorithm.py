@@ -49,4 +49,3 @@ def read_graph_server():
         answer = input()
         print("answer 0")
         answer = input()
-        # TODO find out how to send tests in bulk
