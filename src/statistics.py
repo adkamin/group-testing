@@ -10,7 +10,8 @@ class Statistics:
         self.positive = []             # list of positive nodes
         self.negative = []             # list of negative nodes
         self.unknown = []              # list of nodes for which the status is not known yer
-        self.initially_infected = []   # list of initially infected nodes
+        self.initially_infected = []   # list of initially infected nodes, we probably dont need this anymore
+        self.cluster_count = 0         # number indicating the number of clusters that have been found so far in the graph
 
     def __str__(self):
         return f'({self.graph} \n {self.nr_initially_infected}, {self.infection_chance}, {self.lower_bound}, {self.upper_bound})'
