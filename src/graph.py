@@ -33,7 +33,8 @@ class Graph:
 
     # TODO method to sort by weight
     def sort_cliques(self):
-        sorted(self.cliques, lambda clique : clique.weight)
+        # sorted(self.cliques, lambda clique : clique.weight)
+        pass
 
 
 class Node:
@@ -52,18 +53,16 @@ class Node:
         return f'{self.index}, {self.neighbors}, {self.degree}'
 
 
-
-
 class Clique:
-    def __init__(self, nodes, actual_nodes): # TODO we need to find a way to turn indices into nodes
+    def __init__(self, nodes, actual_nodes):  # TODO find a way to turn indices into nodes
         self.nodes = nodes
-        self.weight = self.find_degree(actual_nodes) + len(nodes)
+        self.size = len(nodes)  # I think we will still need this
+        self.weight = self.find_degree(actual_nodes) + self.size
 
-    # TODO Change this!!!
     def find_degree(self, actual_nodes):
         sum = 0
         for node in self.nodes:
-            sum += actual_nodes[node].degree - (len(self.nodes) - 1)
+            sum += actual_nodes[node].degree - (self.size - 1)
         return sum
 
     def __str__(self):

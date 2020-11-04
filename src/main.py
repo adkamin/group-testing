@@ -1,24 +1,15 @@
 from graph import Graph
-from IO import IO
+from statistics import statistics
+from algorithm import algorithm
 
 
 def main():
-    # Code for testing with inputfile
-    while True:
-        try:
-            # path = input("Please enter a input path:\n")
-            path = "src/input"
-            with open(path, 'r') as input_file:
-                IO(input_file)
-                break
-        except (FileNotFoundError, IOError):
-            print("Error: file not found")
-        else:
-            break
-
-    # Code for testing with server
-    # inputfile = "src/input" # dummy
-    # IO(inputfile)
+    number_of_tests = int(input())
+    while number_of_tests > 0:
+        candidates = algorithm.find_candidates()    # TODO convert "candidates" into a string acceptable by server
+        print("answer " + candidates)
+        server_reply = input()
+        number_of_tests -= 1
 
 
 if __name__ == '__main__':
