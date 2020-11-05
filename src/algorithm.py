@@ -11,7 +11,8 @@ def find_candidates():
     while not stats.unknown.empty or len(stats.positive) < stats.upperbound:  # while still nodes to be tested
         # TODO we need a way to find isolated cliques of size k > 4, call this group "cliques"
         # binary_search(cliques)
-        # TODO cliques of size >= 4 are seen as nodes, call this "nodes"
+        # TODO check condition if we're done...again
+        # TODO cliques of size =< 4 are seen as nodes, find the unknown ones call this "nodes"
         # binary_search(nodes)
     return stats.positive
 
@@ -35,7 +36,7 @@ def read_graph():
 def find_isolated_candidates():
     isolated_candidates = []
     for clique in stats.graph.cliques:         # TODO I'm sure you ca do this in one line :P
-        if clique.weight = 1:                  # why this error? 
+        if clique.weight == 1:
             isolated_candidates.append(clique)
     binary_search(isolated_candidates)
 
@@ -54,18 +55,20 @@ def binary_search(list): # passing list of nodes/groups that need to be tested. 
             binary_search(new_list_1)
             binary_search(new_list_2)
         else:
+            # TODO remove nodes from dynamic graph, update the degrees
+            # TODO stats.dynamic_graph.sort()
             stats.negative += list
             stats.unknown -= list # should probably be something like intersect but im not sure
     elif len(list) == 1: # i.e. case node
         if run_test(list): # list is not really a list anymore but more of a singleton
             stats.positive.append(list[0])
             stats.unknown.remove(list[0])
-            neighbors = get_neightbors(list[0]) # get a list of all the neighbors of some node
-            if all neighbors in stats.unknown # when this is the case then it means we just found a positive node and we dont know anything about
+            neighbors = stats.graph.nodes[list[0]].neighbors # get a list of all the neighbors of some node
+            # TODO if we have time leftover take care of the clusters and neighbors
+            # if all neighbors in stats.unknown
             # the neighbors yet. so we can increase the number of known clusters, because this is the first node that we found from that cluster
-                stats.cluster_count += 1
-            for neighbor in neighbors: # we keep on expanding the cluster
-                binary_search(neighbor)
+            #    stats.cluster_count += 1
+            binary_search(neighbors)  # we keep on expanding the cluster
         else:
             stats.negative.append(list[0])
             stats.unknown.remove(list[0])
@@ -76,12 +79,15 @@ def binary_search(list): # passing list of nodes/groups that need to be tested. 
 
     pass
 
-def run_test(list): # TODO write function that runs a test, 
-    # returns true if test was positive returns false if test was negative
-    print(f'answer {list}') # TODO convert "list" into a string acceptable by server
+def run_test(list):
+    # returns true if test was positive returns false if test was negativ
+    candidates = []
+    for node in list:
+        if node in stats.unknown:
+            candidates.append(node)
+    print(f'test {candidates}')      # TODO convert "list" into a string acceptable by server
     server_reply = input()
-    return server_reply # TODO write function that turns string var into boolean var
-
+    return bool(server_reply.capitalize())
 
 
 # For testing purposes to read from input file
