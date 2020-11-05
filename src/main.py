@@ -1,5 +1,3 @@
-from graph import Graph
-from statistics import statistics
 from algorithm import algorithm
 
 
