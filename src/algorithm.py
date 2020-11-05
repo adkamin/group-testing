@@ -44,6 +44,9 @@ def binary_search(list): # passing list of nodes/groups that need to be tested. 
     # TODO This is 4c basically. Divide and test, update stats.positive, stats.negative, stats.unknown, repeat
     # TODO When testing individual nodes, search for clusters
     # TODO Keep in mind they want us to send tests in bulk :(
+
+    # if !unknown.empty(still nodes to be tested) OR len(positive) < upperbound OR #clusters < i
+        # get out of here + get out of the while loop
     
     if len(list) > 1: # i.e. case group
         if run_test(list):
