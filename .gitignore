@@ -298,4 +298,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Ignore all text files
+*.txt
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,visualstudiocode,pycharm,python
