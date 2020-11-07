@@ -1,24 +1,23 @@
-from graph import Graph
-from IO import IO
+from algorithm import find_candidates
+import sys
+from statistics import Statistics
 
 
 def main():
-    # Code for testing with inputfile
-    while True:
-        try:
-            # path = input("Please enter a input path:\n")
-            path = "src/input"
-            with open(path, 'r') as input_file:
-                IO(input_file)
-                break
-        except (FileNotFoundError, IOError):
-            print("Error: file not found")
-        else:
-            break
+    number_of_tests = int(input())
+    while number_of_tests > 0:
+        candidates = find_candidates()
+        s = str(candidates)
+        s = s.replace('[', '').replace(']', '').replace(',', '')
+        print("answer " + s)
+        server_reply = input()
+        print(server_reply, file=sys.stderr)
+        number_of_tests -= 1
 
-    # Code for testing with server
-    # inputfile = "src/input" # dummy
-    # IO(inputfile)
+    # debug part
+    # candidates = find_candidates()
+
+
 
 
 if __name__ == '__main__':

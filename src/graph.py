@@ -1,6 +1,9 @@
+import sys
+
 class Graph:
     def __init__(self):
         self.nodes = []
+        self.node_indices = []
         self.edges = []
         self.cliques = []
 
@@ -15,25 +18,17 @@ class Graph:
         for node in list:
             self.nodes.append(Node(node, self))
 
-    def find_maximal_cliques(self):
-        nodes = list(range(len(self.nodes)))
-        self.bron_kerbosh(nodes, [], [])
-        for i in self.cliques:
-            print(i)
-    
-    def bron_kerbosh(self, P, R, X):
-        if len(set(P).union(X)) == 0:
-            self.cliques.append(Clique(R, self.nodes))
-            # TODO for every node in clique increment node.nr_cliques
-        for v in P:
-            neighbors = self.nodes[v].find_neighbors(self.edges)
-            self.bron_kerbosh(set(P).intersection(neighbors), set(R).union([v]), set(X).intersection(neighbors))
-            P = [i for i in P if i != v]
-            X = set(X).union([v])
+    def sort_by_degree(self, nodes_to_consider):
+        self.node_indices = sorted(self.node_indices, key=lambda x : self.nodes[x].degree)
 
-    # TODO method to sort by weight
-    def sort_cliques(self):
-        sorted(self.cliques, lambda clique : clique.weight)
+        # we don't want to return all the node_indices but only the ones that we are considering for the current binary search
+        return [node_index for node_index in self.node_indices if node_index in nodes_to_consider]
+
+    def remove_nodes(self, nodes_to_remove):
+        for node_index in nodes_to_remove:
+            neighbors = self.nodes[node_index].neighbors
+            for neighbor in neighbors:
+                self.nodes[neighbor].remove_neighbor(node_index)
 
 
 class Node:
@@ -41,33 +36,16 @@ class Node:
         self.index = i
         self.neighbors = self.find_neighbors(graph.edges)
         self.degree = len(self.neighbors)
-        self.nr_cliques = 0
-        self.infected = False
-        self.init_infected = False
 
     def find_neighbors(self, edges):
         return [edge[(edge.index(self.index) + 1) % 2] for edge in edges if self.index in edge]
 
+    def remove_neighbor(self, neighbor_to_remove):
+        self.neighbors.remove(neighbor_to_remove)
+        self.degree -= 1
+
     def __str__(self):
         return f'{self.index}, {self.neighbors}, {self.degree}'
-
-
-
-
-class Clique:
-    def __init__(self, nodes, actual_nodes): # TODO we need to find a way to turn indices into nodes
-        self.nodes = nodes
-        self.weight = self.find_degree(actual_nodes) + len(nodes)
-
-    # TODO Change this!!!
-    def find_degree(self, actual_nodes):
-        sum = 0
-        for node in self.nodes:
-            sum += actual_nodes[node].degree - (len(self.nodes) - 1)
-        return sum
-
-    def __str__(self):
-        return f'({self.nodes}, {self.weight})'
 
             
 

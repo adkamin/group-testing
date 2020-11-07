@@ -8,13 +8,13 @@ init_infected = list of initially infected nodes
 2. Search for maximum cliques and save (into objects?)
 3. Test isolated nodes (cliques of size 1) (in binary fashion?) and identify the positive and the negative ones
    - save into positive, negative and remove from unknown
-4. while !unknown.empty(still nodes to be tested) OR len(positive) < upperbound
+4. while !unknown.empty(still nodes to be tested) OR len(positive) < upperbound OR #clusters < i
    4a. do estimates
    4b. form groups based on estimates (either cliques or group od nodes with high degree)
    4c. test groups:
        - case group: 
-           - positive: divide in half and repeat test
-	   - negative: negative.append(nodes), unknown.remove(nodes)
+            - positive: divide in half and repeat test
+	        - negative: negative.append(nodes), unknown.remove(nodes)
        - case node:
            - positive: positive.append(node), unknown.remove(node), test unknown neighbours?, test neighbours of those neighbours? (to find the initially infected maybe)
                 - if len(init_infected = stats.init_infected then: test neighbors....end
