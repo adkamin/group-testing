@@ -1,5 +1,6 @@
 from algorithm import find_candidates
 import sys
+from statistics import Statistics
 
 
 def main():

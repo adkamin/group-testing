@@ -6,10 +6,11 @@ stats = Statistics()
 
 def find_candidates():
     stats = read_graph()
+    stats.positive = []
     # stats = read_graph_debug("src/input")
-    sorted_nodes = stats.dynamic_graph.sort_by_degree(stats.dynamic_graph.node_indices)          # list of nodes sorted by degree
+    sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)          # list of nodes sorted by degree
     # TODO test graph with disconnected edges
-    binary_search(sorted_nodes)
+    binary_search(sorted_nodes, False)
     return stats.positive
 
 
@@ -30,40 +31,43 @@ def read_graph():
         number_of_edges -= 1
     stats.graph.node_indices = nodes
     stats.graph.create_nodes(nodes)
-    stats.dynamic_graph = stats.graph
     return stats
 
 
-def binary_search(binary_nodes): # passing list of nodes/groups that need to be tested. We can also call this DFS?
-    binary_nodes = stats.dynamic_graph.sort_by_degree(binary_nodes)
-    if len(stats.dynamic_graph.nodes) < 1 or len(stats.positive) >= stats.upper_bound: #OR #clusters < i
-        # print(f'{len(stats.dynamic_graph.nodes)}, {len(stats.positive)}, {stats.upper_bound}')
+def binary_search(binary_nodes, left_half): # passing list of nodes/groups that need to be tested. We can also call this DFS?
+    binary_nodes = stats.graph.sort_by_degree(binary_nodes)
+    if len(stats.graph.nodes) < 1 or len(stats.positive) >= stats.upper_bound: #OR #clusters < i
+        # print(f'{len(stats.graph.nodes)}, {len(stats.positive)}, {stats.upper_bound}')
         return
     if len(binary_nodes) > 1:  # i.e. case group
-        if run_test(binary_nodes):
+        if stats.skip_test or run_test(binary_nodes):
+            stats.skip_test = False
             new_list_1, new_list_2 = divide_in_half(binary_nodes)
-            binary_search(new_list_1)
-            binary_search(new_list_2)
+            binary_search(new_list_1, True)
+            binary_search(new_list_2, False)
         else:
             update_graph(binary_nodes)
+            stats.skip_test = left_half
     elif len(binary_nodes) == 1:  # i.e. case node
-        if run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
+        if stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
+            stats.skip_test = False
             stats.positive.append(binary_nodes[0])
-            # neighbors = stats.dynamic_graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
+            # neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
             update_graph(binary_nodes)
             print("currently positive: " + str(len(stats.positive)), file=sys.stderr)
             # TODO if we have time leftover take care of the clusters and neighbors
             # when this is the case then it means we just found a positive node and we dont know anything about
             # the neighbors yet. so we can increase the number of known clusters, because this is the first node that we found from that cluster
             #    stats.cluster_count += 1
-            # binary_search(neighbors)  # we keep on expanding the cluster
+            # binary_search(neighbors, False)  # we keep on expanding the cluster
         else:
             update_graph(binary_nodes)
+            stats.skip_test = left_half
 
 
-# removes nodes_to_remove from stats.dynamic_graph and sorted_nodes, updates degrees
+# removes nodes_to_remove from stats.graph and sorted_nodes, updates degrees
 def update_graph(nodes_to_remove):
-    stats.dynamic_graph.remove_nodes(nodes_to_remove)
+    stats.graph.remove_nodes(nodes_to_remove)
 
 def divide_in_half(binary_nodes):
     half = len(binary_nodes) // 2
@@ -76,8 +80,11 @@ def run_test(candidates):
     s = str(candidates)
     s = s.replace('[', '').replace(']', '').replace(',', '')
     print(f'test {s}')
-    print("testing: " + s + "\n", file=sys.stderr)
+    print("testing: " + s, file=sys.stderr)
     server_reply = input()
+
+    print("server reply " + server_reply + "\n", file=sys.stderr)
+
     # return bool(server_reply.capitalize())
     # this didnt work ): because bool(str) returns True if len(str) > 0 and false otherwise
     if(server_reply.lower() == "true"):
@@ -106,6 +113,6 @@ def read_graph_debug(input_file):
                 number_of_edges -= 1
             stats.graph.node_indices = nodes
             stats.graph.create_nodes(nodes)
-            stats.dynamic_graph = stats.graph
+            stats.graph = stats.graph
             return stats
 
