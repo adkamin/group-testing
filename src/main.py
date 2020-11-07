@@ -1,6 +1,5 @@
 from algorithm import find_candidates
 import sys
-from statistics import Statistics
 
 
 def main():
@@ -13,11 +12,6 @@ def main():
         server_reply = input()
         print(server_reply, file=sys.stderr)
         number_of_tests -= 1
-
-    # debug part
-    # candidates = find_candidates()
-
-
 
 
 if __name__ == '__main__':

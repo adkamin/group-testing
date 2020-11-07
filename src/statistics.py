@@ -1,5 +1,6 @@
 from graph import Graph
 
+
 class Statistics:
     def __init__(self):
         self.graph = Graph()
@@ -8,10 +9,8 @@ class Statistics:
         self.lower_bound = 0
         self.upper_bound = 0
         self.positive = []             # list of positive nodes
-        self.cluster_count = 0         # number indicating the number of clusters that have been found so far in the graph
+        self.cluster_count = 0         # the number of clusters that have been found so far in the graph
         self.nr_tests = 0
         self.skip_test = False
 
-    def __str__(self):
-        return f'({self.graph} \n {self.nr_initially_infected}, {self.infection_chance}, {self.lower_bound}, {self.upper_bound})'
 
