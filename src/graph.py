@@ -19,7 +19,7 @@ class Graph:
             self.nodes.append(Node(node, self))
 
     def sort_by_degree(self, nodes_to_consider):
-        self.node_indices = sorted(self.node_indices, key=lambda x : self.nodes[x].degree, reverse=True)
+        self.node_indices = sorted(self.node_indices, key=lambda x : self.nodes[x].degree)
 
         # we don't want to return all the node_indices but only the ones that we are considering for the current binary search
         return [node_index for node_index in self.node_indices if node_index in nodes_to_consider]
