@@ -15,16 +15,19 @@ def find_candidates():
 
 
 def read_graph():
+    stats.graph.nodes = []
+    stats.graph.edges = []
+    stats.graph.node_indices = []
     nodes = list(range(int(input())))
-    print("nr nodes: " + str(len(nodes)) + "\n", file=sys.stderr)
+    # print("nr nodes: " + str(len(nodes)) + "\n", file=sys.stderr)
     number_of_edges = int(input())
-    print("nr edges: " + str(number_of_edges) + "\n", file=sys.stderr)
+    # print("nr edges: " + str(number_of_edges) + "\n", file=sys.stderr)
     stats.initially_infected = int(input())
     stats.infection_chance = float(input())
     bounds = input().split(' ')
     stats.lower_bound = int(bounds[0])
     stats.upper_bound = int(bounds[1])
-    print("upper bound: " + str(stats.upper_bound) + "\n", file=sys.stderr)
+    # print("upper bound: " + str(stats.upper_bound) + "\n", file=sys.stderr)
     while number_of_edges > 0:
         edge = input().split(' ')
         stats.graph.edges.append((int(edge[0]), int(edge[1])))
@@ -52,9 +55,10 @@ def binary_search(binary_nodes, left_half): # passing list of nodes/groups that 
         if stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
             stats.skip_test = False
             stats.positive.append(binary_nodes[0])
-            # neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
             update_graph(binary_nodes)
-            print("currently positive: " + str(len(stats.positive)), file=sys.stderr)
+            # neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
+            # print(f'neighbors: {neighbors}', file=sys.stderr)
+            # print("currently positive: " + str(len(stats.positive)), file=sys.stderr)
             # TODO if we have time leftover take care of the clusters and neighbors
             # when this is the case then it means we just found a positive node and we dont know anything about
             # the neighbors yet. so we can increase the number of known clusters, because this is the first node that we found from that cluster
@@ -111,6 +115,7 @@ def read_graph_debug(input_file):
                 edge = input_file.readline().split(' ')
                 stats.graph.edges.append((int(edge[0]), int(edge[1])))
                 number_of_edges -= 1
+            stats.graph.node_indices = []
             stats.graph.node_indices = nodes
             stats.graph.create_nodes(nodes)
             stats.graph = stats.graph

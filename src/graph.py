@@ -1,3 +1,5 @@
+import sys
+
 class Graph:
     def __init__(self):
         self.nodes = []
@@ -23,14 +25,11 @@ class Graph:
         return [node_index for node_index in self.node_indices if node_index in nodes_to_consider]
 
     def remove_nodes(self, nodes_to_remove):
-        # print(f"lets remove some nodes shall we: {nodes_to_remove}")
-        # 1. remove node indices that we don't want anymore
-        self.node_indices = set(self.node_indices).difference(nodes_to_remove)
-        # 2. remove edges that are not relevant anymore (not sure if this line works yet)
-        self.edges = [edge for edge in self.edges for node_index in nodes_to_remove if node_index not in edge]
-        # 3. update degree of each node
-        for node_index in self.node_indices:
-            self.nodes[node_index].update_degree(self.edges)
+        for node_index in nodes_to_remove:
+            neighbors = self.nodes[node_index].neighbors
+            for neighbor in neighbors:
+                self.nodes[neighbor].remove_neighbor(node_index)
+
 
 class Node:
     def __init__(self, i, graph):
@@ -41,9 +40,9 @@ class Node:
     def find_neighbors(self, edges):
         return [edge[(edge.index(self.index) + 1) % 2] for edge in edges if self.index in edge]
 
-    def update_degree(self, edges):
-        self.neighbors = self.find_neighbors(edges)
-        self.degree = len(self.neighbors) 
+    def remove_neighbor(self, neighbor_to_remove):
+        self.neighbors.remove(neighbor_to_remove)
+        self.degree -= 1
 
     def __str__(self):
         return f'{self.index}, {self.neighbors}, {self.degree}'
