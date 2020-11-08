@@ -10,12 +10,22 @@ def find_candidates():
     stats.positive = []
     sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
     # stolen from Geeks for Geeks
-    n = int(len(sorted_nodes)/((stats.upper_bound+stats.lower_bound)/2))
+    n = int(len(sorted_nodes)/stats.estimated_infected)
     sorted_nodes = [sorted_nodes[i*n:(i+1)*n] for i in range((len(sorted_nodes) + n-1) // n)]
     for lst in sorted_nodes:
         binary_search(lst, False)
     print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     return stats.positive
+
+    nodes = 100
+    edges = e
+
+    most_edges = (100*99)/2
+    stats.estimed_infected
+
+    if (((stats.estimed_infected/nodes) * (e/most_edges))/2) >= constant
+    
+
 
 
 # stores the data from the server into a graph object
@@ -33,6 +43,9 @@ def read_graph():
     bounds = input().split(' ')
     stats.lower_bound = int(bounds[0])
     stats.upper_bound = int(bounds[1])
+    stats.estimated_infected = (stats.upper_bound+stats.lower_bound)/2
+    most_edges = (len(nodes)*(len(nodes)-1))/2
+    stats.connectivity_degree = ((stats.estimed_infected/len(nodes)) * (number_of_edges/most_edges))/2
     # print("upper bound: " + str(stats.upper_bound) + "\n", file=sys.stderr)
     while number_of_edges > 0:
         edge = input().split(' ')
@@ -73,7 +86,7 @@ def binary_search(binary_nodes, left_half):
             # the neighbors yet. so we can increase the number of known clusters,
             # because this is the first node that we found from that cluster
             #    stats.cluster_count += 1
-            if False and stats.infection_chance >= 0.5:
+            if stats.connectivity_degree < 0.1
                 print("Neighbor time!!!", file=sys.stderr)
                 binary_search(neighbors, False)  # we keep on expanding the cluster
         else:
