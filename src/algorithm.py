@@ -89,7 +89,7 @@ def binary_search(binary_nodes, left_half, neighbor_search):
             # print(f"connectivity={stats.connectivity_degree}", file=sys.stderr)
             if True or stats.connectivity_degree < 0.05 and stats.infection_degree < 0.05 and stats.infection_chance > 0.05:
                 if not stats.searching_neighbors:
-                    # print("let's look for some neighbors", file=sys.stderr)
+                    print(f'info: connectivity_degree={stats.connectivity_degree}, infection_degree={stats.infection_degree}, infection_chance={stats.infection_chance}', file=sys.stderr)
                     stats.searching_neighbors = True
                 binary_search(neighbors, False, True)  # we keep on expanding the cluster
         else:
