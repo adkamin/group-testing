@@ -12,6 +12,7 @@ class Statistics:
         self.cluster_count = 0         # the number of clusters that have been found so far in the graph
         self.nr_tests = 0
         self.skip_test = False
+        self.searching_neighbors = False
         self.estimated_infected = 0
         self.connectivity_degree = 0
         self.infection_degree = 0
