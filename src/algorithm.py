@@ -9,7 +9,12 @@ def find_candidates():
     stats = read_graph()
     stats.positive = []
     sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
-    binary_search(sorted_nodes, False)
+    # stolen from Geeks for Geeks
+    n = 10
+    sorted_nodes = [sorted_nodes[i*n:(i+1)*n] for i in range((len(sorted_nodes) + n-1) // n)]
+    for lst in sorted_nodes:
+        binary_search(lst, False)
+    print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     return stats.positive
 
 
@@ -18,8 +23,9 @@ def read_graph():
     stats.graph.nodes = []
     stats.graph.edges = []
     stats.graph.node_indices = []
+    stats.nr_tests = 0
     nodes = list(range(int(input())))
-    # print("nr nodes: " + str(len(nodes)) + "\n", file=sys.stderr)
+    print("\nnr nodes: " + str(len(nodes)), file=sys.stderr)
     number_of_edges = int(input())
     # print("nr edges: " + str(number_of_edges) + "\n", file=sys.stderr)
     stats.initially_infected = int(input())
@@ -84,13 +90,12 @@ def divide_in_half(binary_nodes):
 # returns true if test was positive, returns false otherwise
 def run_test(candidates):
     stats.nr_tests += 1
-    print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     s = str(candidates)
     s = s.replace('[', '').replace(']', '').replace(',', '')
     print(f'test {s}')
-    print("testing: " + s, file=sys.stderr)
+    # print("testing: " + s, file=sys.stderr)
     server_reply = input()
-    print("server reply " + server_reply + "\n", file=sys.stderr)
+    # print("server reply " + server_reply + "\n", file=sys.stderr)
     return server_reply == "true"
 
 
