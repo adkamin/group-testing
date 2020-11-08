@@ -46,6 +46,9 @@ def read_graph():
 # searches for positive nodes in binary search fashion, stores the intermediate results into stats.positive
 def binary_search(binary_nodes, left_half):
     binary_nodes = stats.graph.sort_by_degree(binary_nodes)
+    # skip = (stats.lower_bound - (len(stats.graph.nodes) - len(binary_nodes) - len(stats.positive))) > 0
+    # if skip:
+    #     print("Woa It happend!!", file=sys.stderr)
     if len(stats.graph.nodes) < 1 or len(stats.positive) >= stats.upper_bound: #OR #clusters < i
         # print(f'{len(stats.graph.nodes)}, {len(stats.positive)}, {stats.upper_bound}')
         return
@@ -62,15 +65,17 @@ def binary_search(binary_nodes, left_half):
         if stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
             stats.skip_test = False
             stats.positive.append(binary_nodes[0])
+            neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
             update_graph(binary_nodes)
             # TODO if we have time leftover take care of the clusters and neighbors
-            # neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
-            # print(f'neighbors: {neighbors}', file=sys.stderr)
+            # print(f'neighbors:{neighbors}', file=sys.stderr)
             # when this is the case then it means we just found a positive node and we dont know anything about
             # the neighbors yet. so we can increase the number of known clusters,
             # because this is the first node that we found from that cluster
             #    stats.cluster_count += 1
-            # binary_search(neighbors, False)  # we keep on expanding the cluster
+            if False and (stats.infection_chance * len(neighbors)) >= 0.5:
+                # print("Neighbor time!!!", file=sys.stderr)
+                binary_search(neighbors, False)  # we keep on expanding the cluster
         else:
             update_graph(binary_nodes)
             stats.skip_test = left_half
@@ -95,6 +100,7 @@ def run_test(candidates):
     print(f'test {s}')
     # print("testing: " + s, file=sys.stderr)
     server_reply = input()
+    # print(stats.graph.node_indices, file=sys.stderr)
     # print("server reply " + server_reply + "\n", file=sys.stderr)
     return server_reply == "true"
 

@@ -14,12 +14,14 @@ class Graph:
 
     # sorts the nodes in increasing fashion
     def sort_by_degree(self, nodes_to_consider):
-        return sorted(nodes_to_consider, key=lambda x: self.nodes[x].degree)
+        to_sort = [node_index for node_index in self.node_indices if node_index in nodes_to_consider]
+        return sorted(to_sort, key=lambda x: self.nodes[x].degree)
 
     # removes nodes_to_remove from the graph and updates their neighbors about this change
     def remove_nodes(self, nodes_to_remove):
         for node_index in nodes_to_remove:
             neighbors = self.nodes[node_index].neighbors
+            self.node_indices.remove(node_index)
             for neighbor in neighbors:
                 self.nodes[neighbor].remove_neighbor(node_index)
 
