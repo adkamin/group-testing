@@ -14,5 +14,6 @@ class Statistics:
         self.skip_test = False
         self.estimated_infected = 0
         self.connectivity_degree = 0
+        self.infection_degree = 0
 
 

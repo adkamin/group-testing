@@ -16,14 +16,6 @@ def find_candidates():
         binary_search(lst, False)
     print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     return stats.positive
-
-    nodes = 100
-    edges = e
-
-    most_edges = (100*99)/2
-    stats.estimed_infected
-
-    if (((stats.estimed_infected/nodes) * (e/most_edges))/2) >= constant
     
 
 
@@ -45,7 +37,8 @@ def read_graph():
     stats.upper_bound = int(bounds[1])
     stats.estimated_infected = (stats.upper_bound+stats.lower_bound)/2
     most_edges = (len(nodes)*(len(nodes)-1))/2
-    stats.connectivity_degree = ((stats.estimed_infected/len(nodes)) * (number_of_edges/most_edges))/2
+    stats.connectivity_degree =  number_of_edges/most_edges
+    stats.infection_degree = stats.estimated_infected/len(nodes)
     # print("upper bound: " + str(stats.upper_bound) + "\n", file=sys.stderr)
     while number_of_edges > 0:
         edge = input().split(' ')
@@ -86,8 +79,9 @@ def binary_search(binary_nodes, left_half):
             # the neighbors yet. so we can increase the number of known clusters,
             # because this is the first node that we found from that cluster
             #    stats.cluster_count += 1
-            if stats.connectivity_degree < 0.1
-                print("Neighbor time!!!", file=sys.stderr)
+            # print(f"connectivity={stats.connectivity_degree}", file=sys.stderr)
+            if stats.connectivity_degree < 0.05 and stats.infection_degree < 0.05 and stats.infection_chance > 0.05:
+                print(":)", file=sys.stderr)
                 binary_search(neighbors, False)  # we keep on expanding the cluster
         else:
             update_graph(binary_nodes)
