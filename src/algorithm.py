@@ -10,7 +10,7 @@ def find_candidates():
     stats.positive = []
     sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
     # stolen from Geeks for Geeks
-    n = 10
+    n = int(len(sorted_nodes)/((stats.upper_bound+stats.lower_bound)/2))
     sorted_nodes = [sorted_nodes[i*n:(i+1)*n] for i in range((len(sorted_nodes) + n-1) // n)]
     for lst in sorted_nodes:
         binary_search(lst, False)
@@ -73,8 +73,8 @@ def binary_search(binary_nodes, left_half):
             # the neighbors yet. so we can increase the number of known clusters,
             # because this is the first node that we found from that cluster
             #    stats.cluster_count += 1
-            if False and (stats.infection_chance * len(neighbors)) >= 0.5:
-                # print("Neighbor time!!!", file=sys.stderr)
+            if False and stats.infection_chance >= 0.5:
+                print("Neighbor time!!!", file=sys.stderr)
                 binary_search(neighbors, False)  # we keep on expanding the cluster
         else:
             update_graph(binary_nodes)
