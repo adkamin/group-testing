@@ -25,6 +25,10 @@ class Graph:
             for neighbor in neighbors:
                 self.nodes[neighbor].remove_neighbor(node_index)
 
+    # the function that we use that finds the subgraph of a graph does not consider isolated nodes, so we needed a seperate function for that
+    def get_isolated_nodes(self):
+        lst = [node_index for node_index in self.node_indices if self.nodes[node_index].degree == 0]
+        return lst
 
 class Node:
     def __init__(self, i, graph):

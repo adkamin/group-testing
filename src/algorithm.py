@@ -9,7 +9,14 @@ def find_candidates():
     stats = read_graph()
     stats.positive = []
     sub_graphs = connected_tuples(stats.graph.edges)
-    if (len(stats.graph.nodes)/2) < stats.estimated_infected and len(stats.graph.nodes) < 1000:
+    isolated_nodes = stats.graph.get_isolated_nodes()
+    # count = 0
+    # for g in sub_graphs:
+    #     count += len(g)
+    
+    # print(f"{count}, {len(stats.graph.node_indices)}", file=sys.stderr)
+
+    if (len(stats.graph.nodes)/2) < stats.estimated_infected:
         nodes = stats.graph.sort_by_degree(stats.graph.node_indices)
         print("better don't do binary search ", file=sys.stderr)
         for node in nodes:
