@@ -9,19 +9,28 @@ def find_candidates():
     stats = read_graph()
     stats.positive = []
     sub_graphs = connected_tuples(stats.graph.edges)
-    for graph in sub_graphs:
-        sorted_graph = stats.graph.sort_by_degree(graph)
-        n = round(len(sorted_graph) / (stats.estimated_infected * (len(graph) / len(stats.graph.nodes))))
-        sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
-        for lst in sorted_graph:
-            binary_search(lst, False, False)
-    if len(stats.graph.edges) == 0:
-        # stolen from Geeks for Geeks
-        sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
-        n = int(len(sorted_nodes) / stats.estimated_infected)
-        sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
-        for lst in sorted_nodes:
-            binary_search(lst, False, False)
+    if (len(stats.graph.nodes)/2) < stats.estimated_infected and len(stats.graph.nodes) < 1000:
+        nodes = stats.graph.sort_by_degree(stats.graph.node_indices)
+        print("better don't do binary search ", file=sys.stderr)
+        for node in nodes:
+            if len(stats.positive) >= stats.upper_bound:
+                return
+            if run_test(node):
+                stats.positive.append(node)
+    else:
+        for graph in sub_graphs:
+            sorted_graph = stats.graph.sort_by_degree(graph)
+            n = round(len(sorted_graph) / (stats.estimated_infected * (len(graph) / len(stats.graph.nodes))))
+            sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
+            for lst in sorted_graph:
+                binary_search(lst, False, False)
+        if len(stats.graph.edges) == 0:
+            # stolen from Geeks for Geeks
+            sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
+            n = round(len(sorted_nodes) / stats.estimated_infected)
+            sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
+            for lst in sorted_nodes:
+                binary_search(lst, False, False)
     print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     return stats.positive
 
