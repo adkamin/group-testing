@@ -35,14 +35,14 @@ def find_candidates():
             n = round(len(sorted_graph) / (stats.estimated_infected * (len(graph) / len(stats.graph.nodes))))
             sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
             for lst in sorted_graph:
-                binary_search(lst, False, False)
+                binary_search(lst, False)
         if len(stats.graph.edges) == 1:
             # stolen from Geeks for Geeks
             sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
             n = round(len(sorted_nodes) / stats.estimated_infected)
             sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
             for lst in sorted_nodes:
-                binary_search(lst, False, False)
+                binary_search(lst, False)
     print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
     return stats.positive
 
@@ -78,24 +78,17 @@ def read_graph():
 
 
 # searches for positive nodes in binary search fashion, stores the intermediate results into stats.positive
-def binary_search(binary_nodes, left_half, neighbor_search):
+def binary_search(binary_nodes, left_half):
     binary_nodes = stats.graph.sort_by_degree(binary_nodes)
     skip = (stats.lower_bound - (len(stats.graph.nodes) - len(binary_nodes) - len(stats.positive))) > 0
-    # neighbor search thingy:
-    if stats.searching_neighbors and not neighbor_search:
-        stats.searching_neighbors = False
-        stats.cluster_count += 1
-        # print(f"that's enough now: clusters={stats.cluster_count}, init_infected={stats.initially_infected}", file=sys.stderr)
-    if len(stats.positive) >= stats.upper_bound or stats.cluster_count >= stats.initially_infected: #OR #clusters < i
-        # if stats.cluster_count >= stats.initially_infected:
-            # print(f'IT HAPPENED: {stats.cluster_count}, {stats.initially_infected}', file=sys.stderr)
+    if len(stats.positive) >= stats.upper_bound or (stats.connectivity_degree == 0 and len(stats.positive) >= stats.initially_infected):
         return
     if len(binary_nodes) > 1:  # i.e. case group
         if skip or stats.skip_test or run_test(binary_nodes):
             stats.skip_test = False
             new_list_1, new_list_2 = divide_in_half(binary_nodes)
-            binary_search(new_list_1, True, neighbor_search)
-            binary_search(new_list_2, False, neighbor_search)
+            binary_search(new_list_1, True)
+            binary_search(new_list_2, False)
         else:
             update_graph(binary_nodes)
             stats.skip_test = left_half
@@ -103,20 +96,7 @@ def binary_search(binary_nodes, left_half, neighbor_search):
         if skip or stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
             stats.skip_test = False
             stats.positive.append(binary_nodes[0])
-            neighbors = stats.graph.nodes[binary_nodes[0]].neighbors  # get a list of all the neighbors of some node
             update_graph(binary_nodes)
-            # TODO if we have time leftover take care of the clusters and neighbors
-            # print(f'neighbors:{neighbors}', file=sys.stderr)
-            # when this is the case then it means we just found a positive node and we dont know anything about
-            # the neighbors yet. so we can increase the number of known clusters,
-            # because this is the first node that we found from that cluster
-            #    stats.cluster_count += 1
-            # print(f"connectivity={stats.connectivity_degree}", file=sys.stderr)
-            if stats.connectivity_degree == 0.0:
-                if not stats.searching_neighbors:
-                    # print(f'info: connectivity_degree={stats.connectivity_degree}, infection_degree={stats.infection_degree}, infection_chance={stats.infection_chance}', file=sys.stderr)
-                    stats.searching_neighbors = True
-                binary_search(neighbors, False, True)  # we keep on expanding the cluster
         else:
             update_graph(binary_nodes)
             stats.skip_test = left_half
