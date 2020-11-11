@@ -8,13 +8,15 @@ class Graph:
         self.edges = []         # tuples of nodes that form an edge
 
     # given list of increasing indices, creates list of node objects and saves it into self.nodes
-    def create_nodes(self, list):
-        for node in list:
-            self.nodes.append(Node(node, self))
+    def create_nodes(self, indices):
+        for index in indices:
+            self.nodes.append(Node(index, self))
+        for node in self.nodes:
+            node.secondary_degree = sum([self.nodes[neighbor].degree for neighbor in node.neighbors]) - node.degree
 
     # sorts the nodes in increasing fashion
     def sort_by_degree(self, nodes_to_consider):
-        return sorted(nodes_to_consider, key=lambda x: self.nodes[x].degree)
+        return sorted(nodes_to_consider, key=lambda x: (self.nodes[x].degree, self.nodes[x].secondary_degree))
 
     # removes nodes_to_remove from the graph and updates their neighbors about this change
     # not sure if still needed
@@ -35,6 +37,7 @@ class Node:
         self.index = i
         self.neighbors = self.find_neighbors(graph.edges)
         self.degree = len(self.neighbors)
+        self.secondary_degree = 0
 
     # returns list of neighbors of self using graph.edges
     def find_neighbors(self, edges):
