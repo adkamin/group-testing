@@ -16,7 +16,7 @@ class Graph:
 
     # sorts the nodes in increasing fashion
     def sort_by_degree(self, nodes_to_consider):
-        return sorted(nodes_to_consider, key=lambda x: (self.nodes[x].degree, self.nodes[x].secondary_degree))
+        return sorted(nodes_to_consider, key=lambda x: (self.nodes[x].degree + self.nodes[x].secondary_degree))
         # return sorted(nodes_to_consider, key=lambda x: (self.nodes[x].degree, self.nodes[x].secondary_degree), reverse=True)
 
     # removes nodes_to_remove from the graph and updates their neighbors about this change
