@@ -37,7 +37,7 @@ def read_graph():  # TODO call this save_statistics()?
     return specs
 
 
-# creates tuples of nodes which form an edge and stores it into stats.graph
+# creates tuples of nodes which form an edge and stores it into specs.graph
 def create_edges(nr_edges):
     while nr_edges > 0:
         edge = input().split(' ')
@@ -47,58 +47,58 @@ def create_edges(nr_edges):
 
 # tests the nodes individually
 def individual_testing():
-    nodes = stats.graph.sort_by_degree(stats.graph.node_indices)
+    nodes = specs.graph.sort_by_degree(specs.graph.node_indices)
     print("Binary search was avoided", file=sys.stderr)
     for node in nodes:
-        if len(stats.infected) >= stats.upper_bound:
+        if len(specs.infected) >= specs.upper_bound:
             return
         if run_test(node):
-            stats.infected.append(node)
+            specs.infected.append(node)
 
 
 def binary_testing():
-    sub_graphs = connected_tuples(stats.graph.edges)
-    isolated_nodes = stats.graph.get_isolated_nodes()
+    sub_graphs = connected_tuples(specs.graph.edges)
+    isolated_nodes = specs.graph.get_isolated_nodes()
     if len(isolated_nodes) > 0:
         sub_graphs.add(tuple(isolated_nodes))
     for graph in sub_graphs:
-        sorted_graph = stats.graph.sort_by_degree(graph)
-        n = round(len(sorted_graph) / (stats.nr_estimated_infected * (len(graph) / len(stats.graph.nodes))))
+        sorted_graph = specs.graph.sort_by_degree(graph)
+        n = round(len(sorted_graph) / (specs.nr_estimated_infected * (len(graph) / len(specs.graph.nodes))))
         sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
         for lst in sorted_graph:
             binary_search(lst, False)
-    if len(stats.graph.edges) == 1:
+    if len(specs.graph.edges) == 1:
         # TODO stolen from Geeks for Geeks
-        sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
-        n = round(len(sorted_nodes) / stats.nr_estimated_infected)
+        sorted_nodes = specs.graph.sort_by_degree(specs.graph.node_indices)  # list of nodes sorted by degree
+        n = round(len(sorted_nodes) / specs.nr_estimated_infected)
         sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
         for lst in sorted_nodes:
             binary_search(lst, False)
 
 
-# searches for positive nodes in binary search fashion, stores the intermediate results into stats.positive
+# searches for positive nodes in binary search fashion, stores the intermediate results into specs.positive
 def binary_search(binary_nodes, left_half):
-    binary_nodes = stats.graph.sort_by_degree(binary_nodes)
-    skip = (stats.lower_bound - (len(stats.graph.nodes) - len(binary_nodes) - len(stats.infected))) > 0
-    if len(stats.infected) >= stats.upper_bound or (stats.connectivity_degree == 0 and len(stats.infected) >= stats.nr_initially_infected):
+    binary_nodes = specs.graph.sort_by_degree(binary_nodes)
+    skip = (specs.lower_bound - (len(specs.graph.nodes) - len(binary_nodes) - len(specs.infected))) > 0
+    if len(specs.infected) >= specs.upper_bound or (specs.connectivity_degree == 0 and len(specs.infected) >= specs.nr_initially_infected):
         return
     if len(binary_nodes) > 1:  # i.e. case group
-        if skip or stats.skip_test or run_test(binary_nodes):
-            stats.skip_test = False
+        if skip or specs.skip_test or run_test(binary_nodes):
+            specs.skip_test = False
             new_list_1, new_list_2 = divide_in_half(binary_nodes)
             binary_search(new_list_1, True)
             binary_search(new_list_2, False)
         else:
-            stats.graph.update_graph(binary_nodes)
-            stats.skip_test = left_half
+            specs.graph.update_graph(binary_nodes)
+            specs.skip_test = left_half
     elif len(binary_nodes) == 1:  # i.e. case node
-        if skip or stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
-            stats.skip_test = False
-            stats.infected.append(binary_nodes[0])
-            stats.graph.update_graph(binary_nodes)
+        if skip or specs.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
+            specs.skip_test = False
+            specs.infected.append(binary_nodes[0])
+            specs.graph.update_graph(binary_nodes)
         else:
-            stats.graph.update_graph(binary_nodes)
-            stats.skip_test = left_half
+            specs.graph.update_graph(binary_nodes)
+            specs.skip_test = left_half
 
 
 # TODO Stolen from stack overflow
@@ -142,13 +142,13 @@ def divide_in_half(binary_nodes):
 
 # returns true if test was positive, returns false otherwise
 def run_test(candidates):
-    stats.nr_tests += 1
+    specs.nr_tests += 1
     s = str(candidates)
     s = s.replace('[', '').replace(']', '').replace(',', '')
     print(f'test {s}')
     # print("testing: " + s, file=sys.stderr)
     server_reply = input()
-    # print(stats.graph.node_indices, file=sys.stderr)
+    # print(specs.graph.node_indices, file=sys.stderr)
     # print("server reply " + server_reply + "\n", file=sys.stderr)
     return server_reply == "true"
 
