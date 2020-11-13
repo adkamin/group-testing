@@ -1,7 +1,7 @@
 from graph import Graph
 
 
-class Statistics:
+class Specifics:
     def __init__(self):
         self.graph = Graph()            # TODO comment each line
         self.nr_initially_infected = 0
@@ -14,8 +14,7 @@ class Statistics:
         self.connectivity_degree = 0.0
         self.infection_degree = 0.0
 
-
-    def reset(self):
+    def reset(self):  # TODO what are all the values that need to be reset and why?
         self.graph.nodes = []
         self.graph.edges = []
         self.graph.node_indices = []

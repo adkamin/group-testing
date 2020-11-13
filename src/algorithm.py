@@ -1,47 +1,47 @@
 from statistics import Statistics
 import sys
 
-stats = Statistics()  # statistics to store necessary information for the algorithm
+specs = Specifics()  # statistics to store necessary information for the algorithm
 
 
 # returns the final list of nodes which were found to be infected
 def find_candidates():
-    stats = read_graph()
-    stats.infected = []
-    if stats.infection_degree > 0.5 or (stats.connectivity_degree > 0.18 and stats.infection_degree > 0.25):
+    specs = read_graph()
+    specs.infected = []
+    if specs.infection_degree > 0.5 or (specs.connectivity_degree > 0.18 and specs.infection_degree > 0.25):
         individual_testing()
     else:
         binary_testing()
-    print("Number of queries: " + str(stats.nr_tests), file=sys.stderr)
-    return stats.infected
+    print("Number of queries: " + str(specs.nr_tests), file=sys.stderr)
+    return specs.infected
 
 
 # stores the data from the server into a graph object
-def read_graph():
-    stats.reset()
+def read_graph():  # TODO call this save_statistics()?
+    specs.reset()
     nr_nodes = int(input())
-    stats.graph.node_indices = list(range(nr_nodes))
+    specs.graph.node_indices = list(range(nr_nodes))
     print("\nNumber of nodes: " + str(nr_nodes), file=sys.stderr)
     nr_edges = int(input())
-    stats.nr_initially_infected = int(input())
+    specs.nr_initially_infected = int(input())
     input()  # we do not make use of infection chance p
     bounds = input().split(' ')
-    stats.lower_bound = int(bounds[0])
-    stats.upper_bound = int(bounds[1])
-    stats.nr_estimated_infected = (stats.upper_bound + stats.lower_bound) / 2
+    specs.lower_bound = int(bounds[0])
+    specs.upper_bound = int(bounds[1])
+    specs.nr_estimated_infected = (specs.upper_bound + specs.lower_bound) / 2
     most_edges = (nr_nodes*(nr_nodes - 1)) / 2
-    stats.connectivity_degree = nr_edges/most_edges
-    stats.infection_degree = stats.nr_estimated_infected / nr_nodes
+    specs.connectivity_degree = nr_edges/most_edges
+    specs.infection_degree = specs.nr_estimated_infected / nr_nodes
     create_edges(nr_edges)
-    stats.graph.create_nodes()
-    return stats
+    specs.graph.create_nodes()
+    return specs
 
 
 # creates tuples of nodes which form an edge and stores it into stats.graph
 def create_edges(nr_edges):
     while nr_edges > 0:
         edge = input().split(' ')
-        stats.graph.edges.append((int(edge[0]), int(edge[1])))
+        specs.graph.edges.append((int(edge[0]), int(edge[1])))
         nr_edges -= 1
 
 
@@ -68,7 +68,7 @@ def binary_testing():
         for lst in sorted_graph:
             binary_search(lst, False)
     if len(stats.graph.edges) == 1:
-        # stolen from Geeks for Geeks
+        # TODO stolen from Geeks for Geeks
         sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
         n = round(len(sorted_nodes) / stats.nr_estimated_infected)
         sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
@@ -101,7 +101,7 @@ def binary_search(binary_nodes, left_half):
             stats.skip_test = left_half
 
 
-# Stolen from stack overflow
+# TODO Stolen from stack overflow
 def connected_tuples(pairs):
     # for every element, we keep a reference to the list it belongs to
     lists_by_element = {}
