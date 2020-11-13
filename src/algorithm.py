@@ -1,87 +1,86 @@
 from statistics import Statistics
 import sys
 
-stats = Statistics()
+stats = Statistics()  # statistics to store necessary information for the algorithm
 
 
-# returns the final list of nodes which were found to be positive
+# returns the final list of nodes which were found to be infected
 def find_candidates():
     stats = read_graph()
-    # for node in stats.graph.nodes:
-        # print(f'{node.degree}, {node.secondary_degree}', file=sys.stderr)
-    print(f'info: connectivity_degree={stats.connectivity_degree}, infection_degree={stats.infection_degree}, infection_chance={stats.infection_chance}', file=sys.stderr)
-    stats.positive = []
-    sub_graphs = connected_tuples(stats.graph.edges)
-    isolated_nodes = stats.graph.get_isolated_nodes()
-    if len(isolated_nodes) > 0:
-        sub_graphs.add(tuple(isolated_nodes))
-    
-    # for g in sub_graphs:
-    #     count += len(g)
-    
-    # print(f"{count}, {len(stats.graph.node_indices)}", file=sys.stderr)
-
-    if (len(stats.graph.nodes)/2) < stats.estimated_infected or (stats.connectivity_degree > 0.18 and stats.infection_degree > 0.25):
-        nodes = stats.graph.sort_by_degree(stats.graph.node_indices)
-        print("better don't do binary search ", file=sys.stderr)
-        for node in nodes:
-            if len(stats.positive) >= stats.upper_bound:
-                return
-            if run_test(node):
-                stats.positive.append(node)
+    stats.infected = []
+    if stats.infection_degree > 0.5 or (stats.connectivity_degree > 0.18 and stats.infection_degree > 0.25):
+        individual_testing()
     else:
-        for graph in sub_graphs:
-            sorted_graph = stats.graph.sort_by_degree(graph)
-            n = round(len(sorted_graph) / (stats.estimated_infected * (len(graph) / len(stats.graph.nodes))))
-            sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
-            for lst in sorted_graph:
-                binary_search(lst, False)
-        if len(stats.graph.edges) == 1:
-            # stolen from Geeks for Geeks
-            sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
-            n = round(len(sorted_nodes) / stats.estimated_infected)
-            sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
-            for lst in sorted_nodes:
-                binary_search(lst, False)
-    print("nr tests: " + str(stats.nr_tests), file=sys.stderr)
-    return stats.positive
+        binary_testing()
+    print("Number of queries: " + str(stats.nr_tests), file=sys.stderr)
+    return stats.infected
 
 
 # stores the data from the server into a graph object
 def read_graph():
-    stats.graph.nodes = []
-    stats.graph.edges = []
-    stats.graph.node_indices = []
-    stats.nr_tests = 0
-    stats.cluster_count = 0
-    nodes = list(range(int(input())))
-    print("\nnr nodes: " + str(len(nodes)), file=sys.stderr)
-    number_of_edges = int(input())
-    # print("nr edges: " + str(number_of_edges) + "\n", file=sys.stderr)
-    stats.initially_infected = int(input())
-    stats.infection_chance = float(input())
+    stats.reset()
+    nr_nodes = int(input())
+    stats.graph.node_indices = list(range(nr_nodes))
+    print("\nNumber of nodes: " + str(nr_nodes), file=sys.stderr)
+    nr_edges = int(input())
+    stats.nr_initially_infected = int(input())
+    input()  # we do not make use of infection chance p
     bounds = input().split(' ')
     stats.lower_bound = int(bounds[0])
     stats.upper_bound = int(bounds[1])
-    stats.estimated_infected = (stats.upper_bound+stats.lower_bound)/2
-    most_edges = (len(nodes)*(len(nodes)-1))/2
-    stats.connectivity_degree =  number_of_edges/most_edges
-    stats.infection_degree = stats.estimated_infected/len(nodes)
-    # print("upper bound: " + str(stats.upper_bound) + "\n", file=sys.stderr)
-    while number_of_edges > 0:
+    stats.nr_estimated_infected = (stats.upper_bound + stats.lower_bound) / 2
+    most_edges = (nr_nodes*(nr_nodes - 1)) / 2
+    stats.connectivity_degree = nr_edges/most_edges
+    stats.infection_degree = stats.nr_estimated_infected / nr_nodes
+    create_edges(nr_edges)
+    stats.graph.create_nodes()
+    return stats
+
+
+# creates tuples of nodes which form an edge and stores it into stats.graph
+def create_edges(nr_edges):
+    while nr_edges > 0:
         edge = input().split(' ')
         stats.graph.edges.append((int(edge[0]), int(edge[1])))
-        number_of_edges -= 1
-    stats.graph.node_indices = nodes
-    stats.graph.create_nodes(nodes)
-    return stats
+        nr_edges -= 1
+
+
+# tests the nodes individually
+def individual_testing():
+    nodes = stats.graph.sort_by_degree(stats.graph.node_indices)
+    print("Binary search was avoided", file=sys.stderr)
+    for node in nodes:
+        if len(stats.infected) >= stats.upper_bound:
+            return
+        if run_test(node):
+            stats.infected.append(node)
+
+
+def binary_testing():
+    sub_graphs = connected_tuples(stats.graph.edges)
+    isolated_nodes = stats.graph.get_isolated_nodes()
+    if len(isolated_nodes) > 0:
+        sub_graphs.add(tuple(isolated_nodes))
+    for graph in sub_graphs:
+        sorted_graph = stats.graph.sort_by_degree(graph)
+        n = round(len(sorted_graph) / (stats.nr_estimated_infected * (len(graph) / len(stats.graph.nodes))))
+        sorted_graph = [sorted_graph[i * n:(i + 1) * n] for i in range((len(sorted_graph) + n - 1) // n)]
+        for lst in sorted_graph:
+            binary_search(lst, False)
+    if len(stats.graph.edges) == 1:
+        # stolen from Geeks for Geeks
+        sorted_nodes = stats.graph.sort_by_degree(stats.graph.node_indices)  # list of nodes sorted by degree
+        n = round(len(sorted_nodes) / stats.nr_estimated_infected)
+        sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
+        for lst in sorted_nodes:
+            binary_search(lst, False)
 
 
 # searches for positive nodes in binary search fashion, stores the intermediate results into stats.positive
 def binary_search(binary_nodes, left_half):
     binary_nodes = stats.graph.sort_by_degree(binary_nodes)
-    skip = (stats.lower_bound - (len(stats.graph.nodes) - len(binary_nodes) - len(stats.positive))) > 0
-    if len(stats.positive) >= stats.upper_bound or (stats.connectivity_degree == 0 and len(stats.positive) >= stats.initially_infected):
+    skip = (stats.lower_bound - (len(stats.graph.nodes) - len(binary_nodes) - len(stats.infected))) > 0
+    if len(stats.infected) >= stats.upper_bound or (stats.connectivity_degree == 0 and len(stats.infected) >= stats.nr_initially_infected):
         return
     if len(binary_nodes) > 1:  # i.e. case group
         if skip or stats.skip_test or run_test(binary_nodes):
@@ -90,16 +89,17 @@ def binary_search(binary_nodes, left_half):
             binary_search(new_list_1, True)
             binary_search(new_list_2, False)
         else:
-            update_graph(binary_nodes)
+            stats.graph.update_graph(binary_nodes)
             stats.skip_test = left_half
     elif len(binary_nodes) == 1:  # i.e. case node
         if skip or stats.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
             stats.skip_test = False
-            stats.positive.append(binary_nodes[0])
-            update_graph(binary_nodes)
+            stats.infected.append(binary_nodes[0])
+            stats.graph.update_graph(binary_nodes)
         else:
-            update_graph(binary_nodes)
+            stats.graph.update_graph(binary_nodes)
             stats.skip_test = left_half
+
 
 # Stolen from stack overflow
 def connected_tuples(pairs):
@@ -132,10 +132,6 @@ def connected_tuples(pairs):
     # return the unique lists present in the dictionary
     # print("Groups: " + str(set(tuple(l) for l in lists_by_element.values())), file=sys.stderr)
     return set(tuple(l) for l in lists_by_element.values())
-
-# removes nodes_to_remove from stats.graph
-def update_graph(nodes_to_remove):
-    stats.graph.remove_nodes(nodes_to_remove)
 
 
 # divides binary_nodes into halves
