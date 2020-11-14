@@ -83,9 +83,13 @@ def binary_testing():
 # O(n/3 * 5)
 # Same complexity as DFS: O(|V| + |E|)
 def binary_search(nodes, left_half):
-    if specs.stop or len(specs.infected) >= specs.upper_bound or (specs.connectivity_degree == 0 and len(specs.infected) >= specs.nr_initially_infected):
+    if specs.stop: # base case 1
         return
-    if len(specs.graph.node_indices) <= (specs.lower_bound - len(specs.infected)):
+    if len(specs.infected) >= specs.upper_bound: # base case 2
+        return
+    if specs.connectivity_degree == 0 and len(specs.infected) >= specs.nr_initially_infected: # base case 3
+        return
+    if len(specs.graph.node_indices) <= (specs.lower_bound - len(specs.infected)): # base case 4
         specs.stop = True
         specs.infected += specs.graph.node_indices
         return
