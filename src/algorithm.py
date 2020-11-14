@@ -1,4 +1,4 @@
-from statistics import Statistics
+from specifics import Specifics
 import sys
 
 specs = Specifics()  # statistics to store necessary information for the algorithm
@@ -6,7 +6,7 @@ specs = Specifics()  # statistics to store necessary information for the algorit
 
 # returns the final list of nodes which were found to be infected
 def find_candidates():
-    specs = read_graph()
+    specs = store_specs()
     specs.infected = []
     if specs.infection_degree > 0.5 or (specs.connectivity_degree > 0.18 and specs.infection_degree > 0.25):
         individual_testing()
@@ -17,7 +17,7 @@ def find_candidates():
 
 
 # stores the data from the server into a graph object
-def read_graph():  # TODO call this save_statistics()?
+def store_specs():  # TODO call this save_statistics()?
     specs.reset()
     nr_nodes = int(input())
     specs.graph.node_indices = list(range(nr_nodes))
@@ -56,6 +56,7 @@ def individual_testing():
             specs.infected.append(node)
 
 
+# tests the nodes with binary search
 def binary_testing():
     sub_graphs = connected_tuples(specs.graph.edges)
     isolated_nodes = specs.graph.get_isolated_nodes()
@@ -68,8 +69,7 @@ def binary_testing():
         for lst in sorted_graph:
             binary_search(lst, False)
     if len(specs.graph.edges) == 1:
-        # TODO stolen from Geeks for Geeks
-        sorted_nodes = specs.graph.sort_by_degree(specs.graph.node_indices)  # list of nodes sorted by degree
+        sorted_nodes = specs.graph.sort_by_degree(specs.graph.node_indices)
         n = round(len(sorted_nodes) / specs.nr_estimated_infected)
         sorted_nodes = [sorted_nodes[i * n:(i + 1) * n] for i in range((len(sorted_nodes) + n - 1) // n)]
         for lst in sorted_nodes:
@@ -77,27 +77,27 @@ def binary_testing():
 
 
 # searches for positive nodes in binary search fashion, stores the intermediate results into specs.positive
-def binary_search(binary_nodes, left_half):
-    binary_nodes = specs.graph.sort_by_degree(binary_nodes)
-    skip = (specs.lower_bound - (len(specs.graph.nodes) - len(binary_nodes) - len(specs.infected))) > 0
+def binary_search(nodes, left_half):
+    nodes = specs.graph.sort_by_degree(nodes)
+    skip = (specs.lower_bound - (len(specs.graph.nodes) - len(nodes) - len(specs.infected))) > 0
     if len(specs.infected) >= specs.upper_bound or (specs.connectivity_degree == 0 and len(specs.infected) >= specs.nr_initially_infected):
         return
-    if len(binary_nodes) > 1:  # i.e. case group
-        if skip or specs.skip_test or run_test(binary_nodes):
+    if len(nodes) > 1:  # i.e. case group
+        if skip or specs.skip_test or run_test(nodes):
             specs.skip_test = False
-            new_list_1, new_list_2 = divide_in_half(binary_nodes)
+            new_list_1, new_list_2 = divide_in_half(nodes)
             binary_search(new_list_1, True)
             binary_search(new_list_2, False)
         else:
-            specs.graph.update_graph(binary_nodes)
+            specs.graph.update_graph(nodes)
             specs.skip_test = left_half
-    elif len(binary_nodes) == 1:  # i.e. case node
-        if skip or specs.skip_test or run_test(binary_nodes):  # list is not really a list anymore but more of a singleton
+    elif len(nodes) == 1:  # i.e. case node
+        if skip or specs.skip_test or run_test(nodes):  # list is not really a list anymore but more of a singleton
             specs.skip_test = False
-            specs.infected.append(binary_nodes[0])
-            specs.graph.update_graph(binary_nodes)
+            specs.infected.append(nodes[0])
+            specs.graph.update_graph(nodes)
         else:
-            specs.graph.update_graph(binary_nodes)
+            specs.graph.update_graph(nodes)
             specs.skip_test = left_half
 
 
@@ -143,13 +143,8 @@ def divide_in_half(binary_nodes):
 # returns true if test was positive, returns false otherwise
 def run_test(candidates):
     specs.nr_tests += 1
-    s = str(candidates)
-    s = s.replace('[', '').replace(']', '').replace(',', '')
-    print(f'test {s}')
-    # print("testing: " + s, file=sys.stderr)
+    print("test", *candidates)
     server_reply = input()
-    # print(specs.graph.node_indices, file=sys.stderr)
-    # print("server reply " + server_reply + "\n", file=sys.stderr)
     return server_reply == "true"
 
 
