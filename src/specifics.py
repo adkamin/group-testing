@@ -3,21 +3,23 @@ from graph import Graph
 
 class Specifics:
     def __init__(self):
-        self.graph = Graph()            # TODO comment each line
-        self.nr_initially_infected = 0
-        self.lower_bound = 0
-        self.upper_bound = 0
-        self.infected = []               # list of positive nodes
-        self.nr_tests = 0
-        self.skip_lefthalf = False
-        self.stop = False
-        self.nr_estimated_infected = 0
-        self.connectivity_degree = 0.0
-        self.infection_degree = 0.0
+        self.graph = Graph()             # graph object
+        self.nr_initially_infected = 0   # number of initially infected people
+        self.lower_bound = 0             # upper bound
+        self.upper_bound = 0             # lower bound
+        self.infected = []               # list of nodes which were found to be positive
+        self.nr_queries = 0              # number of queries to the server
+        self.skip_lefthalf = False       # boolean value to skip testing the other half
+        self.stop = False                # boolean value to abruptly stop the binary_search
+        self.nr_estimated_infected = 0   # estimated number of infected people based on the upper and lower bound
+        self.connectivity_degree = 0.0   # degree to which the graph is connected
+        self.infection_degree = 0.0      # estimated ratio of infected nodes and all nodes in the graph
 
-    def reset(self):  # TODO what are all the values that need to be reset and why?
+    # resets the specifics
+    def reset(self):
         self.graph.nodes = []
         self.graph.edges = []
         self.graph.node_indices = []
-        self.nr_tests = 0
+        self.infected = []
+        self.nr_queries = 0
         self.stop = False
