@@ -2,6 +2,7 @@ from algorithm import find_candidates
 import sys
 
 
+# O(nr_problems * O(individual_testing))
 def main():
     nr_problems = int(input())
     while nr_problems > 0:

@@ -9,7 +9,8 @@ class Specifics:
         self.upper_bound = 0
         self.infected = []               # list of positive nodes
         self.nr_tests = 0
-        self.skip_test = False
+        self.skip_lefthalf = False
+        self.stop = False
         self.nr_estimated_infected = 0
         self.connectivity_degree = 0.0
         self.infection_degree = 0.0
@@ -19,3 +20,4 @@ class Specifics:
         self.graph.edges = []
         self.graph.node_indices = []
         self.nr_tests = 0
+        self.stop = False
