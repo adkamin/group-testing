@@ -78,10 +78,10 @@ def binary_testing():
 
 # searches for positive nodes in binary search fashion, stores the intermediate results into specs.positive
 def binary_search(nodes, left_half):
-    nodes = specs.graph.sort_by_degree(nodes)
-    skip = (specs.lower_bound - (len(specs.graph.nodes) - len(nodes) - len(specs.infected))) > 0
     if len(specs.infected) >= specs.upper_bound or (specs.connectivity_degree == 0 and len(specs.infected) >= specs.nr_initially_infected):
         return
+    nodes = specs.graph.sort_by_degree(nodes)
+    skip = (specs.lower_bound - (len(specs.graph.nodes) - len(nodes) - len(specs.infected))) > 0
     if len(nodes) > 1:  # i.e. case group
         if skip or specs.skip_test or run_test(nodes):
             specs.skip_test = False
